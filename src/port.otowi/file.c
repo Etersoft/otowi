@@ -3,12 +3,18 @@
 #include <stdio.h>
 #include <errno.h>
 
-#include "winerror.h"
+#include "ntstatus.h"
+#define WIN32_NO_STATUS
 #include "windef.h"
+#include "winternl.h"
+#include "winerror.h"
 #include "winbase.h"
 
 #include "port.h"
 
+#include "../kernel32/kernel_private.h"
+
+// TODO: already in wine
 VOID TranslateErrno()
 {
 	DWORD gle;
@@ -34,3 +40,8 @@ const char * ConsumeWinPath( LPCWSTR lpFileName )
 	return "";
 }
 
+// TODO: do as __wine_kernel_init
+void otowi_init()
+{
+	LOCALE_Init();
+}

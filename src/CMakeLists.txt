@@ -17,13 +17,13 @@ set(CMAKE_C_FLAGS "-g -Wno-attributes -D__WINESRC__ -D_NTSYSTEM_")
 
 #add_subdirectory(wineguts)
 
-file(GLOB FLAT_SOURCE_FILES port/codepages/*.c port/*.c ntdll/*.c kernel32/*.c)
+file(GLOB FLAT_SOURCE_FILES port/codepages/*.c port/*.c ntdll/*.c kernel32/*.c port.otowi/*.c)
 
 set(SOURCES
 #src/APIConsole.cpp
 #src/APIFiles.cpp
-port.otowi/file.c
-port.otowi/ntdll.c
+#port.otowi/file.c
+#port.otowi/ntdll.c
 #port/debug.c
 #kernel32/file.c
 #kernel32/thread.c

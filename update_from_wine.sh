@@ -5,12 +5,13 @@ WINESOURCE=$(pwd)/wine-pure
 mkdir -p include/
 
 # from wine, needed for windows.h
-for i in windows.h excpt.h windef.h winnt.h basetsd.h guiddef.h \
-         "pshpack?.h" poppack.h winnt.rh winbase.h winerror.h \
+# edited winbase.h winnt.h
+for i in windows.h excpt.h windef.h   basetsd.h guiddef.h \
+         "pshpack?.h" poppack.h winnt.rh    winerror.h \
          libloaderapi.h winuser.h winuser.rh winnls.h wincon.h \
          winver.h verrsrc.h winreg.h \
          reason.h winnetwk.h cderr.h dde.h dde.rh ddeml.h \
-         lzexpand.h winperf.h; do
+         lzexpand.h winperf.h strsafe.h; do
     # TODO: add comment do not change this code
     cp -f $WINESOURCE/include/$i include/
 done
@@ -45,7 +46,7 @@ done
 
 # modified at our side
 mkdir -p include.otowi/wine/
-for i in config.h wingdi.h port.h wine/server.h; do
+for i in config.h wingdi.h port.h wine/server.h winbase.h winnt.h; do
     rm -f include/$i
     ln -sr include.otowi/$i include/$i
 done

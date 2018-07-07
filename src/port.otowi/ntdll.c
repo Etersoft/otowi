@@ -33,3 +33,14 @@ LPCSTR debugstr_us( const UNICODE_STRING *us )
     if (!us) return "<null>";
     return debugstr_wn(us->Buffer, us->Length / sizeof(WCHAR));
 }
+
+static TEB teb_buffer;
+
+/**********************************************************************
+ *           NtCurrentTeb   (NTDLL.@)
+ */
+TEB * WINAPI NtCurrentTeb(void)
+{
+    return &teb_buffer;
+    //return pthread_getspecific( teb_key );
+}
