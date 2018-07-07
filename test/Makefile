@@ -1,3 +1,4 @@
 CFLAGS = -I../include
-openfile.exe: openfile.c Makefile
-	$(CC) $(CFLAGS) $< -o $@
+LDADD = ../src/libotowi.a
+openfile: openfile.c Makefile
+	$(CC) $(CFLAGS) $< $(LDADD) -o $@
