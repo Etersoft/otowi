@@ -1,0 +1,1 @@
+../include.otowi/nb30.h

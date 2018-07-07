@@ -1,0 +1,1 @@
+../include.otowi/winscard.h
