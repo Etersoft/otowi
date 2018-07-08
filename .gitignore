@@ -1,0 +1,9 @@
+src/CMakeCache.txt
+src/CMakeFiles/
+src/Makefile
+src/cmake_install.cmake
+src/libotowi.so
+src/libotowi_static.a
+*.o
+*.static
+*.run
