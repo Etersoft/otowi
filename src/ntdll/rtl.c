@@ -108,6 +108,7 @@ static const DWORD CRC_table[256] =
     0xb40bbe37, 0xc30c8ea1, 0x5a05df1b, 0x2d02ef8d
 };
 
+#if 0
 /*
  *	resource functions
  */
@@ -367,6 +368,8 @@ NTSTATUS WINAPI vDbgPrintExWithPrefix( LPCSTR prefix, ULONG id, ULONG level, LPC
     return STATUS_SUCCESS;
 }
 
+#endif
+
 /******************************************************************************
  *  RtlAcquirePebLock		[NTDLL.@]
  */
@@ -382,6 +385,8 @@ VOID WINAPI RtlReleasePebLock(void)
 {
     RtlLeaveCriticalSection( NtCurrentTeb()->Peb->FastPebLock );
 }
+
+#if 0
 
 /******************************************************************************
  *  RtlNewSecurityObject		[NTDLL.@]
@@ -1692,3 +1697,4 @@ NTSTATUS WINAPI RtlQueryPackageIdentity(HANDLE token, WCHAR *fullname, SIZE_T *f
     FIXME("(%p, %p, %p, %p, %p, %p): stub\n", token, fullname, fullname_size, appid, appid_size, packaged);
     return STATUS_NOT_FOUND;
 }
+#endif

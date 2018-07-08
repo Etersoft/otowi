@@ -175,6 +175,8 @@ static inline int is_view_valloc( const struct file_view *view )
     return !(view->protect & (SEC_FILE | SEC_RESERVE | SEC_COMMIT));
 }
 
+#if 0
+
 /***********************************************************************
  *           get_page_vprot
  *
@@ -405,6 +407,7 @@ static struct file_view *VIRTUAL_FindView( const void *addr, size_t size )
     return NULL;
 }
 
+#endif
 
 /***********************************************************************
  *           get_mask
@@ -417,7 +420,7 @@ static inline UINT_PTR get_mask( ULONG zero_bits )
     return (1 << zero_bits) - 1;
 }
 
-
+#if 0
 /***********************************************************************
  *           is_write_watch_range
  */
@@ -1203,7 +1206,6 @@ done:
 }
 
 
-#if 0
 /***********************************************************************
  *           get_committed_size
  *
@@ -1241,7 +1243,7 @@ static SIZE_T get_committed_size( struct file_view *view, void *base, BYTE *vpro
         if ((*vprot ^ get_page_vprot( (char *)view->base + (i << page_shift) )) & VPROT_COMMITTED) break;
     return (i - start) << page_shift;
 }
-#endif
+
 
 /***********************************************************************
  *           decommit_view
@@ -1259,7 +1261,7 @@ static NTSTATUS decommit_pages( struct file_view *view, size_t start, size_t siz
     return FILE_GetNtStatus();
 }
 
-#if 0
+
 /***********************************************************************
  *           allocate_dos_memory
  *
@@ -1602,6 +1604,7 @@ static NTSTATUS map_image( HANDLE hmapping, ACCESS_MASK access, int fd, SIZE_T m
     return status;
 }
 
+
 /***********************************************************************
  *             virtual_map_section
  *
@@ -1757,7 +1760,6 @@ done:
     if (needs_close) close( unix_handle );
     return res;
 }
-#endif
 
 
 struct alloc_virtual_heap
@@ -1847,7 +1849,7 @@ void virtual_init_threading(void)
 {
     use_locks = TRUE;
 }
-
+#endif
 
 /***********************************************************************
  *           virtual_get_system_info
@@ -1878,7 +1880,7 @@ void virtual_get_system_info( SYSTEM_BASIC_INFORMATION *info )
     info->NumberOfProcessors      = NtCurrentTeb()->Peb->NumberOfProcessors;
 }
 
-
+#if 0
 /***********************************************************************
  *           virtual_create_builtin_view
  */
@@ -2448,7 +2450,6 @@ void virtual_set_large_address_space(void)
     user_space_limit = working_set_limit = address_space_limit;
 }
 
-#if 0
 
 /***********************************************************************
  *             NtAllocateVirtualMemory   (NTDLL.@)
@@ -2667,6 +2668,7 @@ NTSTATUS WINAPI NtFreeVirtualMemory( HANDLE process, PVOID *addr_ptr, SIZE_T *si
     server_leave_uninterrupted_section( &csVirtual, &sigset );
     return status;
 }
+
 
 /***********************************************************************
  *             NtProtectVirtualMemory   (NTDLL.@)
@@ -3253,6 +3255,7 @@ NTSTATUS WINAPI NtQuerySection( HANDLE handle, SECTION_INFORMATION_CLASS class, 
     return status;
 }
 
+
 /***********************************************************************
  *             NtFlushVirtualMemory   (NTDLL.@)
  *             ZwFlushVirtualMemory   (NTDLL.@)
@@ -3299,6 +3302,7 @@ NTSTATUS WINAPI NtFlushVirtualMemory( HANDLE process, LPCVOID *addr_ptr,
     server_leave_uninterrupted_section( &csVirtual, &sigset );
     return status;
 }
+
 
 /***********************************************************************
  *             NtGetWriteWatch   (NTDLL.@)

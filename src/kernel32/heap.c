@@ -83,6 +83,7 @@ static HANDLE systemHeap;   /* globally shared heap */
  */
 static inline HANDLE HEAP_CreateSystemHeap(void)
 {
+#if 0
     int created;
     void *base;
     HANDLE map, event;
@@ -114,6 +115,8 @@ static inline HANDLE HEAP_CreateSystemHeap(void)
         systemHeap = base;
     }
     CloseHandle( map );
+#endif
+    systemHeap = (HANDLE)0xcece;
     return systemHeap;
 }
 
@@ -1141,7 +1144,7 @@ BOOL WINAPI LocalUnlock(
     return GlobalUnlock( handle );
 }
 
-
+#if 0
 /***********************************************************************
  *           GlobalMemoryStatusEx   (KERNEL32.@)
  * A version of GlobalMemoryStatus that can deal with memory over 4GB
@@ -1491,3 +1494,4 @@ BOOL WINAPI FreeUserPhysicalPages(HANDLE process, ULONG_PTR *pages, ULONG_PTR *u
     SetLastError(ERROR_CALL_NOT_IMPLEMENTED);
     return FALSE;
 }
+#endif

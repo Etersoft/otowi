@@ -121,7 +121,7 @@ HANDLE thread_init(void)
     static struct debug_info debug_info;  /* debug info for initial thread */
 
 #if 0
-    virtual_init();
+//    virtual_init();
 
     /* reserve space for shared user data */
 
@@ -144,6 +144,9 @@ HANDLE thread_init(void)
     NtAllocateVirtualMemory( NtCurrentProcess(), &addr, 1, &size,
                              MEM_COMMIT | MEM_TOP_DOWN, PAGE_READWRITE );
     peb = addr;
+#endif
+    // FIXME
+    peb = malloc(sizeof(*peb));
 
     peb->FastPebLock        = &peb_lock;
     peb->ProcessParameters  = &params;
@@ -160,6 +163,7 @@ HANDLE thread_init(void)
     params.wShowWindow = 1; /* SW_SHOWNORMAL */
     ldr.Length = sizeof(ldr);
     ldr.Initialized = TRUE;
+#if 0
     RtlInitializeBitMap( &tls_bitmap, peb->TlsBitmapBits, sizeof(peb->TlsBitmapBits) * 8 );
     RtlInitializeBitMap( &tls_expansion_bitmap, peb->TlsExpansionBitmapBits,
                          sizeof(peb->TlsExpansionBitmapBits) * 8 );
@@ -171,6 +175,7 @@ HANDLE thread_init(void)
     InitializeListHead( &ldr.InMemoryOrderModuleList );
     InitializeListHead( &ldr.InInitializationOrderModuleList );
     *(ULONG_PTR *)peb->Reserved = get_image_addr();
+#endif
 
     /*
      * Starting with Vista, the first user to log on has session id 1.
@@ -180,16 +185,15 @@ HANDLE thread_init(void)
 
     /* allocate and initialize the initial TEB */
 
-    signal_alloc_thread( &teb );
-#endif
+//    signal_alloc_thread( &teb );
+
     // TODO: improve signal code
     teb = NtCurrentTeb();
-    //teb->Peb = peb;
+    teb->Peb = peb;
     teb->Tib.StackBase = (void *)~0UL;
     teb->StaticUnicodeString.Buffer = teb->StaticUnicodeBuffer;
     teb->StaticUnicodeString.MaximumLength = sizeof(teb->StaticUnicodeBuffer);
 
-#if 0
     thread_data = (struct ntdll_thread_data *)&teb->GdiTebBatch;
     thread_data->request_fd = -1;
     thread_data->reply_fd   = -1;
@@ -197,6 +201,7 @@ HANDLE thread_init(void)
     thread_data->wait_fd[1] = -1;
     thread_data->debug_info = &debug_info;
 
+#if 0
     signal_init_thread( teb );
     virtual_init_threading();
 #endif

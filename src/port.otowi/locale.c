@@ -122,6 +122,87 @@ static inline UINT get_lcid_codepage( LCID lcid )
 }
 
 
+/******************************************************************************
+ *              GetACP   (KERNEL32.@)
+ *
+ * Get the current Ansi code page Id for the system.
+ *
+ * PARAMS
+ *  None.
+ *
+ * RETURNS
+ *    The current Ansi code page identifier for the system.
+ */
+UINT WINAPI GetACP(void)
+{
+    assert( ansi_cptable );
+    return ansi_cptable->info.codepage;
+}
+
+
+/******************************************************************************
+ *              SetCPGlobal   (KERNEL32.@)
+ *
+ * Set the current Ansi code page Id for the system.
+ *
+ * PARAMS
+ *    acp [I] code page ID to be the new ACP.
+ *
+ * RETURNS
+ *    The previous ACP.
+ */
+UINT WINAPI SetCPGlobal( UINT acp )
+{
+    UINT ret = GetACP();
+    const union cptable *new_cptable = wine_cp_get_table( acp );
+
+    if (new_cptable) ansi_cptable = new_cptable;
+    return ret;
+}
+
+
+/***********************************************************************
+ *              GetOEMCP   (KERNEL32.@)
+ *
+ * Get the current OEM code page Id for the system.
+ *
+ * PARAMS
+ *  None.
+ *
+ * RETURNS
+ *    The current OEM code page identifier for the system.
+ */
+UINT WINAPI GetOEMCP(void)
+{
+    assert( oem_cptable );
+    return oem_cptable->info.codepage;
+}
+
+
+/***********************************************************************
+ *           IsValidCodePage   (KERNEL32.@)
+ *
+ * Determine if a given code page identifier is valid.
+ *
+ * PARAMS
+ *  codepage [I] Code page Id to verify.
+ *
+ * RETURNS
+ *  TRUE, If codepage is valid and available on the system,
+ *  FALSE otherwise.
+ */
+BOOL WINAPI IsValidCodePage( UINT codepage )
+{
+    switch(codepage) {
+    case CP_UTF7:
+    case CP_UTF8:
+        return TRUE;
+    default:
+        return wine_cp_get_table( codepage ) != NULL;
+    }
+}
+
+
 /***********************************************************************
  *		get_codepage_table
  *

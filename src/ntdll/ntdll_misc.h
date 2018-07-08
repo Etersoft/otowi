@@ -191,12 +191,12 @@ extern NTSTATUS virtual_uninterrupted_write_memory( void *addr, const void *buff
 extern void VIRTUAL_SetForceExec( BOOL enable ) DECLSPEC_HIDDEN;
 extern void virtual_release_address_space(void) DECLSPEC_HIDDEN;
 extern void virtual_set_large_address_space(void) DECLSPEC_HIDDEN;
+#endif
 extern struct _KUSER_SHARED_DATA *user_shared_data DECLSPEC_HIDDEN;
 
 /* completion */
 extern NTSTATUS NTDLL_AddCompletion( HANDLE hFile, ULONG_PTR CompletionValue,
                                      NTSTATUS CompletionStatus, ULONG Information ) DECLSPEC_HIDDEN;
-
 /* code pages */
 extern int ntdll_umbstowcs(DWORD flags, const char* src, int srclen, WCHAR* dst, int dstlen) DECLSPEC_HIDDEN;
 extern int ntdll_wcstoumbs(DWORD flags, const WCHAR* src, int srclen, char* dst, int dstlen,
@@ -204,6 +204,7 @@ extern int ntdll_wcstoumbs(DWORD flags, const WCHAR* src, int srclen, char* dst,
 
 extern int CDECL NTDLL__vsnprintf( char *str, SIZE_T len, const char *format, __ms_va_list args ) DECLSPEC_HIDDEN;
 extern int CDECL NTDLL__vsnwprintf( WCHAR *str, SIZE_T len, const WCHAR *format, __ms_va_list args ) DECLSPEC_HIDDEN;
+
 
 /* load order */
 
@@ -220,7 +221,6 @@ enum loadorder
 
 extern enum loadorder get_load_order( const WCHAR *app_name, const WCHAR *path ) DECLSPEC_HIDDEN;
 
-#endif
 
 struct debug_info
 {

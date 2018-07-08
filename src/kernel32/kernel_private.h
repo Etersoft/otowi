@@ -28,9 +28,10 @@ BOOL    WINAPI VerifyConsoleIoHandle(HANDLE);
 HANDLE  WINAPI DuplicateConsoleHandle(HANDLE, DWORD, BOOL, DWORD);
 BOOL    WINAPI CloseConsoleHandle(HANDLE handle);
 HANDLE  WINAPI GetConsoleInputWaitHandle(void);
+/*
 BOOL           CONSOLE_Init(RTL_USER_PROCESS_PARAMETERS *params) DECLSPEC_HIDDEN;
 BOOL           CONSOLE_Exit(void) DECLSPEC_HIDDEN;
-
+*/
 static inline BOOL is_console_handle(HANDLE h)
 {
     return h != INVALID_HANDLE_VALUE && ((UINT_PTR)h & 3) == 3;

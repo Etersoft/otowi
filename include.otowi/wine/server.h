@@ -4,6 +4,13 @@
 #ifndef __WINE_SERVER_H
 #define __WINE_SERVER_H
 
+// Без не собираются некоторые модули, куда не включен server.h
+#include <stdarg.h>
+#include <windef.h>
+#include <winbase.h>
+#include <winternl.h>
+
+
 // from server_protocol.h
 typedef unsigned int obj_handle_t;
 
@@ -13,5 +20,20 @@ typedef unsigned int obj_handle_t;
 
 typedef __int64 timeout_t;
 #define TIMEOUT_INFINITE (((timeout_t)0x7fffffff) << 32 | 0xffffffff)
+
+enum server_fd_type
+{
+    FD_TYPE_INVALID,
+    FD_TYPE_FILE,
+    FD_TYPE_DIR,
+    FD_TYPE_SOCKET,
+    FD_TYPE_SERIAL,
+    FD_TYPE_PIPE,
+    FD_TYPE_MAILSLOT,
+    FD_TYPE_CHAR,
+    FD_TYPE_DEVICE,
+    FD_TYPE_NB_TYPES
+};
+
 
 #endif  /* #ifdef __WINE_UP_H */

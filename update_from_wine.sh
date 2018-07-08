@@ -17,7 +17,7 @@ for i in windows.h excpt.h windef.h   basetsd.h guiddef.h \
 done
 
 # from wine, internal
-for i in winternl.h ntdef.h ntstatus.h ; do
+for i in winternl.h ntdef.h ntstatus.h psapi.h; do
     # TODO: add comment do not change this code
     cp -f $WINESOURCE/include/$i include/
 done
@@ -32,7 +32,7 @@ done
 
 # from include/ddk
 mkdir -p include/ddk/
-for i in ntddk.h wdm.h; do
+for i in ntddk.h ntddser.h wdm.h; do
     # TODO: add comment do not change this code
     cp -f $WINESOURCE/include/ddk/$i include/ddk/
 done
