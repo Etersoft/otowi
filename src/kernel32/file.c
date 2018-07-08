@@ -193,7 +193,19 @@ HANDLE WINAPI CreateFileW( LPCWSTR lpFileName, DWORD dwDesiredAccess, DWORD dwSh
 		case OPEN_EXISTING: break;
 		case TRUNCATE_EXISTING: flags|= O_TRUNC; break;
 		}
-		const char *path = ConsumeWinPath(lpFileName);
+		DWORD destlength = WideCharToMultiByte(CP_UTF8, 0, lpFileName, -1, NULL, 0, NULL, NULL);
+	        char *path = malloc(destlength);
+	        WideCharToMultiByte(CP_UTF8, 0, lpFileName, -1, path, destlength, NULL, NULL);
+
+		//const char *path = ConsumeWinPath(lpFileName);
+		/*
+		int ret = ntdll_wcstoumbs( 0, mask->Buffer, mask->Length / sizeof(WCHAR),
+                               unix_name, sizeof(unix_name) - 1, NULL, &used_default );
+	        if (ret > 0 && !used_default)
+	        {
+        	    unix_name[ret] = 0;
+        	*/
+
 		mode_t mode = (dwFlagsAndAttributes&FILE_ATTRIBUTE_EXECUTABLE) ? 0755 : 0644;
 		// FIXME: os_call_int looks like wineserver call. code from ReactOS?
 		//int r = os_call_int(open_all_args, path, flags, mode);
@@ -204,8 +216,10 @@ HANDLE WINAPI CreateFileW( LPCWSTR lpFileName, DWORD dwDesiredAccess, DWORD dwSh
 			fprintf(stderr, "CreateFile: " WS_FMT " - dwDesiredAccess=0x%x flags=0x%x path=%s errno=%d\n", 
 				lpFileName, dwDesiredAccess, flags, path, errno);
 */
+			free(path);
 			return INVALID_HANDLE_VALUE;
 		}
+		free(path);
 
 #ifndef __linux__
 		if ((dwFlagsAndAttributes & (FILE_FLAG_WRITE_THROUGH|FILE_FLAG_NO_BUFFERING)) != 0) {

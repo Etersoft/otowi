@@ -122,7 +122,8 @@ static inline NTSTATUS fast_wake( RTL_CRITICAL_SECTION *crit )
 
 static inline void close_semaphore( RTL_CRITICAL_SECTION *crit )
 {
-    if (!use_futexes()) NtClose( crit->LockSemaphore );
+    // TODO
+    //if (!use_futexes()) NtClose( crit->LockSemaphore );
 }
 
 #elif defined(__APPLE__)
@@ -200,6 +201,7 @@ static inline void close_semaphore( RTL_CRITICAL_SECTION *crit )
 
 #endif
 
+#if 0
 /***********************************************************************
  *           get_semaphore
  */
@@ -217,8 +219,8 @@ static inline HANDLE get_semaphore( RTL_CRITICAL_SECTION *crit )
     }
     return ret;
 }
+#endif
 
-#if 0
 /***********************************************************************
  *           wait_semaphore
  */
@@ -229,7 +231,8 @@ static inline NTSTATUS wait_semaphore( RTL_CRITICAL_SECTION *crit, int timeout )
     /* debug info is cleared by MakeCriticalSectionGlobal */
     if (!crit->DebugInfo || ((ret = fast_wait( crit, timeout )) == STATUS_NOT_IMPLEMENTED))
     {
-        HANDLE sem = get_semaphore( crit );
+        FIXME("fast_wait forever");
+/*        HANDLE sem = get_semaphore( crit );
         LARGE_INTEGER time;
         select_op_t select_op;
 
@@ -237,10 +240,10 @@ static inline NTSTATUS wait_semaphore( RTL_CRITICAL_SECTION *crit, int timeout )
         select_op.wait.op = SELECT_WAIT;
         select_op.wait.handles[0] = wine_server_obj_handle( sem );
         ret = server_select( &select_op, offsetof( select_op_t, wait.handles[1] ), 0, &time );
+*/
     }
     return ret;
 }
-#endif
 
 /***********************************************************************
  *           RtlInitializeCriticalSection   (NTDLL.@)
@@ -408,12 +411,12 @@ NTSTATUS WINAPI RtlDeleteCriticalSection( RTL_CRITICAL_SECTION *crit )
         }
         close_semaphore( crit );
     }
-    else NtClose( crit->LockSemaphore );
+    // TODO
+    //else NtClose( crit->LockSemaphore );
     crit->LockSemaphore = 0;
     return STATUS_SUCCESS;
 }
 
-#if 0
 /***********************************************************************
  *           RtlpWaitForCriticalSection   (NTDLL.@)
  *
@@ -512,13 +515,13 @@ NTSTATUS WINAPI RtlpUnWaitCriticalSection( RTL_CRITICAL_SECTION *crit )
     /* debug info is cleared by MakeCriticalSectionGlobal */
     if (!crit->DebugInfo || ((ret = fast_wake( crit )) == STATUS_NOT_IMPLEMENTED))
     {
-        HANDLE sem = get_semaphore( crit );
-        ret = NtReleaseSemaphore( sem, 1, NULL );
+        FIXME("fast_wake forever");
+        //HANDLE sem = get_semaphore( crit );
+        //ret = NtReleaseSemaphore( sem, 1, NULL );
     }
     if (ret) RtlRaiseStatus( ret );
     return ret;
 }
-#endif
 
 
 /***********************************************************************

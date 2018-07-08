@@ -18,3 +18,5 @@ OTOWI - C-библиотека, предоставляющая функции Wi
 
 TODO:
 Translate to English.
+
+OTOWI — pure C library with WinAPI functions on Linux system.
