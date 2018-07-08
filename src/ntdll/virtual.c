@@ -571,6 +571,7 @@ static void remove_reserved_area( void *addr, size_t size )
     munmap( addr, size );
 }
 
+#endif
 
 struct area_boundary
 {
@@ -618,6 +619,7 @@ static inline BOOL is_beyond_limit( const void *addr, size_t size, const void *l
     return (addr >= limit || (const char *)addr + size > (const char *)limit);
 }
 
+#if 0
 
 /***********************************************************************
  *           unmap_area
@@ -2450,6 +2452,7 @@ void virtual_set_large_address_space(void)
     user_space_limit = working_set_limit = address_space_limit;
 }
 
+#endif
 
 /***********************************************************************
  *             NtAllocateVirtualMemory   (NTDLL.@)
@@ -2471,9 +2474,9 @@ NTSTATUS WINAPI NtAllocateVirtualMemory( HANDLE process, PVOID *ret, ULONG zero_
 
     if (!size) return STATUS_INVALID_PARAMETER;
     if (!mask) return STATUS_INVALID_PARAMETER_3;
-
     if (process != NtCurrentProcess())
     {
+#if 0
         apc_call_t call;
         apc_result_t result;
 
@@ -2494,8 +2497,11 @@ NTSTATUS WINAPI NtAllocateVirtualMemory( HANDLE process, PVOID *ret, ULONG zero_
             *size_ptr = result.virtual_alloc.size;
         }
         return result.virtual_alloc.status;
+#else
+        FIXME("process != NtCurrentProcess()");
+        return STATUS_INVALID_PARAMETER;
+#endif
     }
-
     /* Round parameters to a page boundary */
 
     if (is_beyond_limit( 0, size, working_set_limit )) return STATUS_WORKING_SET_LIMIT_RANGE;
@@ -2533,6 +2539,7 @@ NTSTATUS WINAPI NtAllocateVirtualMemory( HANDLE process, PVOID *ret, ULONG zero_
         return STATUS_INVALID_PARAMETER;
     }
 
+#if 0
     /* Reserve the memory */
 
     if (use_locks) server_enter_uninterrupted_section( &csVirtual, &sigset );
@@ -2577,7 +2584,10 @@ NTSTATUS WINAPI NtAllocateVirtualMemory( HANDLE process, PVOID *ret, ULONG zero_
     if (!status) VIRTUAL_DEBUG_DUMP_VIEW( view );
 
     if (use_locks) server_leave_uninterrupted_section( &csVirtual, &sigset );
-
+#else
+    status = STATUS_SUCCESS;
+    base = malloc(size);
+#endif
     if (status == STATUS_SUCCESS)
     {
         *ret = base;
@@ -2604,6 +2614,7 @@ NTSTATUS WINAPI NtFreeVirtualMemory( HANDLE process, PVOID *addr_ptr, SIZE_T *si
 
     if (process != NtCurrentProcess())
     {
+#if 0
         apc_call_t call;
         apc_result_t result;
 
@@ -2622,6 +2633,10 @@ NTSTATUS WINAPI NtFreeVirtualMemory( HANDLE process, PVOID *addr_ptr, SIZE_T *si
             *size_ptr = result.virtual_free.size;
         }
         return result.virtual_free.status;
+#else
+        FIXME("process != NtCurrentProcess()");
+        return STATUS_INVALID_PARAMETER;
+#endif
     }
 
     /* Fix the parameters */
@@ -2632,6 +2647,7 @@ NTSTATUS WINAPI NtFreeVirtualMemory( HANDLE process, PVOID *addr_ptr, SIZE_T *si
     /* avoid freeing the DOS area when a broken app passes a NULL pointer */
     if (!base) return STATUS_INVALID_PARAMETER;
 
+#if 0
     server_enter_uninterrupted_section( &csVirtual, &sigset );
 
     if (!(view = VIRTUAL_FindView( base, size )) || !is_view_valloc( view ))
@@ -2666,9 +2682,14 @@ NTSTATUS WINAPI NtFreeVirtualMemory( HANDLE process, PVOID *addr_ptr, SIZE_T *si
     }
 
     server_leave_uninterrupted_section( &csVirtual, &sigset );
+#else
+    free (base);
+    status = STATUS_SUCCESS;
+    *addr_ptr = base;
+    *size_ptr = size;
+#endif
     return status;
 }
-
 
 /***********************************************************************
  *             NtProtectVirtualMemory   (NTDLL.@)
@@ -2690,7 +2711,7 @@ NTSTATUS WINAPI NtProtectVirtualMemory( HANDLE process, PVOID *addr_ptr, SIZE_T 
 
     if (!old_prot)
         return STATUS_ACCESS_VIOLATION;
-
+#if 0
     if (process != NtCurrentProcess())
     {
         apc_call_t call;
@@ -2743,8 +2764,12 @@ NTSTATUS WINAPI NtProtectVirtualMemory( HANDLE process, PVOID *addr_ptr, SIZE_T 
         *size_ptr = size;
         *old_prot = old;
     }
+#else
+    status = STATUS_INVALID_PARAMETER;
+#endif
     return status;
 }
+
 
 
 /* retrieve state for a free memory area; callback for wine_mmap_enum_reserved_areas */
@@ -2796,6 +2821,7 @@ NTSTATUS WINAPI NtQueryVirtualMemory( HANDLE process, LPCVOID addr,
                                       MEMORY_INFORMATION_CLASS info_class, PVOID buffer,
                                       SIZE_T len, SIZE_T *res_len )
 {
+#if 0
     struct file_view *view;
     char *base, *alloc_base = 0, *alloc_end = working_set_limit;
     struct wine_rb_entry *ptr;
@@ -2925,6 +2951,9 @@ NTSTATUS WINAPI NtQueryVirtualMemory( HANDLE process, LPCVOID addr,
 
     if (res_len) *res_len = sizeof(*info);
     return STATUS_SUCCESS;
+#else
+    return STATUS_INVALID_PARAMETER;
+#endif
 }
 
 
@@ -2938,6 +2967,7 @@ NTSTATUS WINAPI NtLockVirtualMemory( HANDLE process, PVOID *addr, SIZE_T *size, 
 
     if (process != NtCurrentProcess())
     {
+#if 0
         apc_call_t call;
         apc_result_t result;
 
@@ -2955,12 +2985,17 @@ NTSTATUS WINAPI NtLockVirtualMemory( HANDLE process, PVOID *addr, SIZE_T *size, 
             *size = result.virtual_lock.size;
         }
         return result.virtual_lock.status;
+#else
+        FIXME("process != NtCurrentProcess()");
+        return STATUS_INVALID_PARAMETER;
+#endif
     }
 
     *size = ROUND_SIZE( *addr, *size );
     *addr = ROUND_ADDR( *addr, page_mask );
 
     if (mlock( *addr, *size )) status = STATUS_ACCESS_DENIED;
+
     return status;
 }
 
@@ -2975,6 +3010,7 @@ NTSTATUS WINAPI NtUnlockVirtualMemory( HANDLE process, PVOID *addr, SIZE_T *size
 
     if (process != NtCurrentProcess())
     {
+#if 0
         apc_call_t call;
         apc_result_t result;
 
@@ -2992,6 +3028,10 @@ NTSTATUS WINAPI NtUnlockVirtualMemory( HANDLE process, PVOID *addr, SIZE_T *size
             *size = result.virtual_unlock.size;
         }
         return result.virtual_unlock.status;
+#else
+        FIXME("process != NtCurrentProcess()");
+        return STATUS_INVALID_PARAMETER;
+#endif
     }
 
     *size = ROUND_SIZE( *addr, *size );
@@ -3001,6 +3041,7 @@ NTSTATUS WINAPI NtUnlockVirtualMemory( HANDLE process, PVOID *addr, SIZE_T *size
     return status;
 }
 
+#if 0
 
 /***********************************************************************
  *             NtCreateSection   (NTDLL.@)

@@ -10,7 +10,6 @@
 #include "winerror.h"
 #include "winbase.h"
 
-#include "kernel_private.h"
 #include "ntdll_misc.h"
 
 #include "wine/exception.h"
@@ -21,38 +20,49 @@
 
 #include "port.h"
 
-WINE_DEFAULT_DEBUG_CHANNEL(otowi);
+WINE_DEFAULT_DEBUG_CHANNEL(ntotowi);
 
 #define IS_SEPARATOR(ch)   ((ch) == '\\' || (ch) == '/')
 
 // ntdll/loader.c
 static HANDLE main_exe_file;
 
+// ntdll/loader.c
+static RTL_CRITICAL_SECTION loader_section;
+
 // ntdll/server.c
 timeout_t server_start_time = 0;  /* time of server startup */
 
-// TODO: do as __wine_kernel_init
-void otowi_init()
+
+void init_directories(void)
 {
-	// TODO: do as __wine_process_init
-	main_exe_file = thread_init();
-	LOCALE_Init();
-	// TODO: do as kernel32/process_attach
-	NtQuerySystemInformation( SystemBasicInformation, &system_info, sizeof(system_info), NULL );
 }
 
-// from dlls/winecrt0/exception.c
-DWORD __wine_exception_handler_page_fault( EXCEPTION_RECORD *record,
-                                           EXCEPTION_REGISTRATION_RECORD *frame,
-                                           CONTEXT *context,
-                                           EXCEPTION_REGISTRATION_RECORD **pdispatcher )
+/***********************************************************************
+ *            RtlRaiseStatus  (NTDLL.@)
+ *
+ * Raise an exception with ExceptionCode = status
+ */
+void WINAPI RtlRaiseStatus( NTSTATUS status )
 {
-    if (record->ExceptionFlags & (EH_UNWINDING | EH_EXIT_UNWIND | EH_NESTED_CALL))
-        return ExceptionContinueSearch;
-    if (record->ExceptionCode != STATUS_ACCESS_VIOLATION)
-        return ExceptionContinueSearch;
+    //raise_status( status, NULL );
+}
 
-    //unwind_frame( record, frame );
+LPCSTR debugstr_us( const UNICODE_STRING *us )
+{
+    if (!us) return "<null>";
+    return debugstr_wn(us->Buffer, us->Length / sizeof(WCHAR));
+}
+
+static TEB teb_buffer;
+
+/**********************************************************************
+ *           NtCurrentTeb   (NTDLL.@)
+ */
+TEB * WINAPI NtCurrentTeb(void)
+{
+    return &teb_buffer;
+    //return pthread_getspecific( teb_key );
 }
 
 /*******************************************************************
@@ -167,4 +177,57 @@ int server_get_unix_fd( HANDLE handle, unsigned int wanted_access, int *unix_fd,
                         int *needs_close, enum server_fd_type *type, unsigned int *options )
 {
     *unix_fd = (int)handle;
+}
+
+
+// from ntdll/loader.c
+/******************************************************************
+ *		RtlExitUserProcess (NTDLL.@)
+ */
+void WINAPI RtlExitUserProcess( DWORD status )
+{
+    RtlEnterCriticalSection( &loader_section );
+    RtlAcquirePebLock();
+    //NtTerminateProcess( 0, status );
+    //LdrShutdownProcess();
+    //NtTerminateProcess( GetCurrentProcess(), status );
+    exit( status );
+}
+
+// TODO: Разбить на kernel32 и ntdll часть?
+#include "../kernel32/kernel_private.h"
+void otowi_init()
+{
+	// TODO: do as __wine_process_init
+	main_exe_file = thread_init();
+
+	PEB *peb = NtCurrentTeb()->Peb;
+	RTL_USER_PROCESS_PARAMETERS *params = peb->ProcessParameters;
+
+	setbuf(stdout, NULL);
+	setbuf(stderr, NULL);
+
+	if (!params->Environment)
+	{
+		/* Copy the parent environment */
+		if (!build_initial_environment()) exit(1);
+	}
+
+	// TODO: do as __wine_kernel_init
+	LOCALE_Init();
+
+
+	// TODO: do as kernel32/process_attach
+	NtQuerySystemInformation( SystemBasicInformation, &system_info, sizeof(system_info), NULL );
+}
+
+/******************************************************************************
+ *  NtTerminateProcess			[NTDLL.@]
+ *
+ *  Native applications must kill themselves when done
+ */
+NTSTATUS WINAPI NtTerminateProcess( HANDLE handle, LONG exit_code )
+{
+    TRACE("");
+    _exit( exit_code );
 }

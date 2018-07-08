@@ -195,8 +195,9 @@ static NTSTATUS FILE_CreateFile( PHANDLE handle, ACCESS_MASK access, POBJECT_ATT
     if (options & FILE_OPEN_BY_FILE_ID)
         io->u.Status = file_id_to_unix_file_name( attr, &unix_name );
     else
+*/
         io->u.Status = nt_to_unix_file_name_attr( attr, &unix_name, disposition );
-
+/*
     if (io->u.Status == STATUS_BAD_DEVICE_TYPE)
     {
         SERVER_START_REQ( open_file_object )
@@ -251,8 +252,8 @@ static NTSTATUS FILE_CreateFile( PHANDLE handle, ACCESS_MASK access, POBJECT_ATT
         }
         SERVER_END_REQ;
         RtlFreeHeap( GetProcessHeap(), 0, objattr );
-#endif
         RtlFreeAnsiString( &unix_name );
+#endif
     }
     else WARN("%s not found (%x)\n", debugstr_us(attr->ObjectName), io->u.Status );
 

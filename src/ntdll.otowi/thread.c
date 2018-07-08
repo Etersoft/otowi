@@ -256,3 +256,15 @@ HANDLE thread_init(void)
 }
 
 
+/******************************************************************************
+ *              NtSetInformationThread  (NTDLL.@)
+ *              ZwSetInformationThread  (NTDLL.@)
+ */
+NTSTATUS WINAPI NtSetInformationThread( HANDLE handle, THREADINFOCLASS class,
+                                        LPCVOID data, ULONG length )
+{
+    NTSTATUS status;
+    FIXME( "info class %d not supported yet\n", class );
+    return STATUS_SUCCESS;
+
+}

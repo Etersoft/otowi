@@ -100,6 +100,8 @@ HANDLE CDECL __wine_make_process_system(void)
     return ret;
 }
 
+#endif
+
 static UINT process_error_mode;
 
 #define UNIMPLEMENTED_INFO_CLASS(c) \
@@ -108,7 +110,6 @@ static UINT process_error_mode;
         ret = STATUS_INVALID_INFO_CLASS; \
         break
 
-#endif
 
 ULONG_PTR get_system_affinity_mask(void)
 {
@@ -117,7 +118,6 @@ ULONG_PTR get_system_affinity_mask(void)
     return ((ULONG_PTR)1 << num_cpus) - 1;
 }
 
-#if 0
 
 #if defined(HAVE_MACH_MACH_H)
 
@@ -175,6 +175,7 @@ static void fill_VM_COUNTERS(VM_COUNTERS* pvmi)
 }
 
 #endif
+
 
 /******************************************************************************
 *  NtQueryInformationProcess		[NTDLL.@]
@@ -495,7 +496,7 @@ NTSTATUS WINAPI NtQueryInformationProcess(
         }
         else ret = STATUS_INFO_LENGTH_MISMATCH;
         break;
-
+#if 0
     case ProcessWow64Information:
         len = sizeof(ULONG_PTR);
         if (ProcessInformationLength != len) ret = STATUS_INFO_LENGTH_MISMATCH;
@@ -519,6 +520,7 @@ NTSTATUS WINAPI NtQueryInformationProcess(
             *(ULONG_PTR *)ProcessInformation = val;
         }
         break;
+#endif
     case ProcessImageFileName:
         /* FIXME: Should return a device path */
     case ProcessImageFileNameWin32:
@@ -667,7 +669,8 @@ NTSTATUS WINAPI NtSetInformationProcess(
                 return STATUS_INVALID_PARAMETER;
             }
             execute_flags = *(ULONG *)ProcessInformation;
-            VIRTUAL_SetForceExec( enable );
+            // TODO
+            //VIRTUAL_SetForceExec( enable );
         }
         break;
 
@@ -680,6 +683,8 @@ NTSTATUS WINAPI NtSetInformationProcess(
     }
     return ret;
 }
+
+#if 0
 
 /******************************************************************************
  * NtFlushInstructionCache [NTDLL.@]

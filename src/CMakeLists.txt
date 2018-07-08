@@ -9,55 +9,23 @@ if(CCACHE_FOUND)
 	set_property(GLOBAL PROPERTY RULE_LAUNCH_LINK ccache)
 endif()
 
+#set (BUILD_SHARED_LIBS True)
 
 find_package(PkgConfig REQUIRED)
 
-set(CMAKE_C_FLAGS "-g -Wno-attributes -D__WINESRC__ -D_NTSYSTEM_")
+set(CMAKE_C_FLAGS "-g -Wno-attributes -D__WINESRC__ -D_NTSYSTEM_ -D_KERNEL32_ -D_USER32_ -D_ADVAPI32_")
+set(LDFLAGS "-fvisibility=default")
 #pkg_check_modules(GLIB2 glib-2.0)
 
 #add_subdirectory(wineguts)
 
-file(GLOB FLAT_SOURCE_FILES port/codepages/*.c port/*.c ntdll/*.c kernel32/*.c port.otowi/*.c)
+file(GLOB FLAT_SOURCE_FILES port/codepages/*.c port/*.c ntdll/*.c ntdll.otowi/*.c kernel32/*.c kernel32.otowi/*.c user32/*.c )
 
-set(SOURCES
-#src/APIConsole.cpp
-#src/APIFiles.cpp
-#port.otowi/file.c
-#port.otowi/ntdll.c
-#port/debug.c
-#kernel32/file.c
-#kernel32/thread.c
-#ntdll/error.c
-#ntdll/heap.c
-#ntdll/rtl.c
-#ntdll/rtlstr.c
-#src/APIFSNotify.cpp
-#src/APIKeyboard.cpp
-#src/APIMemory.cpp
-#src/APIOther.cpp
-#src/APIPrintFormat.cpp
-#src/APIRegistry.cpp
-#src/APIStringCodepages.cpp
-#src/APIStringMap.cpp
-#src/APISynch.cpp
-#src/APITime.cpp
-#src/ConsoleBuffer.cpp
-#src/ConsoleInput.cpp
-#src/ConsoleOutput.cpp
-#src/WinPortHandle.cpp
-#src/WinPortSynch.cpp
-#src/PathHelpers.cpp
-)
-
-add_library (otowi ${FLAT_SOURCE_FILES} ${SOURCES})
-
-#target_include_directories(WinPort PRIVATE ${GLIB2_INCLUDE_DIRS})
+add_library (otowi SHARED ${FLAT_SOURCE_FILES})
+add_library (otowi_static STATIC ${FLAT_SOURCE_FILES})
 
 target_include_directories(otowi PRIVATE ../include)
-#target_include_directories(WinPort PRIVATE src/UI)
-#target_include_directories(WinPort PRIVATE src)
+target_include_directories(otowi_static PRIVATE ../include)
 
-#target_link_libraries(WinPort wineguts utils)
-
-#target_link_libraries(WinPort ${GLIB2_LIBRARIES})
+target_link_libraries(otowi -ldl)
 

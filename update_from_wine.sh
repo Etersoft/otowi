@@ -1,6 +1,6 @@
 #!/bin/sh
 
-WINESOURCE=$(pwd)/wine-pure
+WINESOURCE=$(pwd)/../otowi-resources/wine-pure
 
 mkdir -p include/
 
@@ -25,7 +25,9 @@ done
 # from include/wine
 mkdir -p include/wine/
 for i in port.h exception.h unicode.h debug.h \
-         list.h library.h rbtree.h; do
+         list.h library.h rbtree.h heap.h \
+         server.h server_protocol.h; do
+    # Note: heap.h for test only
     # TODO: add comment do not change this code
     cp -f $WINESOURCE/include/wine/$i include/wine/
 done
@@ -44,9 +46,10 @@ for i in winioctl.h fileapi.h inaddr.h in6addr.h; do
     cp -f $WINESOURCE/include/$i include/
 done
 
-# modified at our side
+# include/wine modified at our side
 mkdir -p include.otowi/wine/
-for i in config.h wingdi.h port.h wine/server.h winbase.h winnt.h; do
+for i in config.h wingdi.h port.h winbase.h winnt.h \
+         wine/test.h; do
     rm -f include/$i
     ln -sr include.otowi/$i include/$i
 done
@@ -68,6 +71,7 @@ cat <<EOF > "$1"
 EOF
 }
 
+# TODO: add defines to windows.h just block include many of these
 # just stub
 for i in dlgs.h mmsystem.h nb30.h rpc.h shellapi.h \
     winsock.h wincrypt.h winscard.h winsvc.h mcx.h imm.h \
@@ -86,7 +90,7 @@ for i in "c_*.c" ; do
 done
 
 # TODO: copy all
-for i in compose.c cpsymbol.c cptable.c  decompose.c mbtowc.c utf8.c wctomb.c ; do
+for i in compose.c cpsymbol.c cptable.c  decompose.c digitmap.c fold.c mbtowc.c utf8.c wctomb.c ; do
     # TODO: add comment do not change this code
     cp -f $WINESOURCE/libs/port/$i src/port/
 done
@@ -95,3 +99,6 @@ for i in casemap.c collation.c debug.c sortkey.c wctype.c mmap.c string.c; do
     # TODO: add comment do not change this code
     cp -f $WINESOURCE/libs/wine/$i src/port/
 done
+
+rm -fv src/CMakeCache.txt
+true

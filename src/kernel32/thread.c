@@ -40,11 +40,11 @@
 #include "wine/server.h"
 #include "wine/debug.h"
 
-#if 0
 #include "kernel_private.h"
 
 WINE_DEFAULT_DEBUG_CHANNEL(thread);
 
+#if 0
 
 /***********************************************************************
  *           CreateThread   (KERNEL32.@)
@@ -847,6 +847,8 @@ DWORD WINAPI GetThreadErrorMode( void )
     return rtlmode_to_win32mode( RtlGetThreadErrorMode() );
 }
 
+#endif
+
 /***********************************************************************
  *              GetThreadUILanguage (KERNEL32.@)
  *
@@ -861,11 +863,13 @@ DWORD WINAPI GetThreadErrorMode( void )
 LANGID WINAPI GetThreadUILanguage( void )
 {
     LANGID lang;
-    NtQueryDefaultUILanguage( &lang );
+    lang = 0;
+    //NtQueryDefaultUILanguage( &lang );
     FIXME(": stub, returning default language.\n");
     return lang;
 }
 
+#if 0
 /***********************************************************************
  *              GetThreadIOPendingFlag (KERNEL32.@)
  */

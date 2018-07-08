@@ -1012,6 +1012,8 @@ NTSTATUS WINAPI NtQueryTimerResolution(OUT ULONG* min_resolution,
     return STATUS_NOT_IMPLEMENTED;
 }
 
+#endif
+
 /******************************************************************************
  * NtSetTimerResolution [NTDLL.@]
  */
@@ -1140,6 +1142,7 @@ NTSTATUS WINAPI NtDelayExecution( BOOLEAN alertable, const LARGE_INTEGER *timeou
     return STATUS_SUCCESS;
 }
 
+#if 0
 
 /******************************************************************************
  *              NtCreateKeyedEvent (NTDLL.@)

@@ -47,7 +47,6 @@
 WINE_DECLARE_DEBUG_CHANNEL(seh);
 WINE_DECLARE_DEBUG_CHANNEL(file);
 
-#if 0
 /***********************************************************************
  *             VirtualAlloc   (KERNEL32.@)
  *
@@ -268,6 +267,7 @@ SIZE_T WINAPI VirtualQuery( LPCVOID addr, PMEMORY_BASIC_INFORMATION info,
 }
 
 
+
 /***********************************************************************
  *             VirtualQueryEx   (KERNEL32.@)
  *
@@ -296,6 +296,8 @@ SIZE_T WINAPI VirtualQueryEx( HANDLE process, LPCVOID addr,
     }
     return ret;
 }
+
+#if 0
 
 
 /***********************************************************************

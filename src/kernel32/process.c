@@ -67,12 +67,14 @@
 WINE_DEFAULT_DEBUG_CHANNEL(process);
 WINE_DECLARE_DEBUG_CHANNEL(relay);
 
+/*
 #ifdef __APPLE__
 extern char **__wine_get_main_environment(void);
 #else
 extern char **__wine_main_environ;
-//static char **__wine_get_main_environment(void) { return __wine_main_environ; }
+static char **__wine_get_main_environment(void) { return __wine_main_environ; }
 #endif
+*/
 
 typedef struct
 {
@@ -279,19 +281,28 @@ static BOOL find_exe_file( const WCHAR *name, WCHAR *buffer, int buflen,
     return FALSE;
 }
 
+#endif
+
+    #ifdef __APPLE__
+    #warning "check wine code for Apple"
+    #else
+    extern char **environ;
+    #endif
 
 /***********************************************************************
  *           build_initial_environment
  *
  * Build the Win32 environment from the Unix environment
  */
-static BOOL build_initial_environment(void)
+BOOL build_initial_environment(void)
 {
     SIZE_T size = 1;
     char **e;
     WCHAR *p, *endptr;
     void *ptr;
-    char **env = __wine_get_main_environment();
+    //char **env = __wine_get_main_environment();
+    char **env = environ;
+
 
     /* Compute the total size of the Unix environment */
     for (e = env; *e; e++)
@@ -330,6 +341,7 @@ static BOOL build_initial_environment(void)
     return TRUE;
 }
 
+#if 0
 
 /***********************************************************************
  *           set_registry_variables
@@ -2693,6 +2705,7 @@ DWORD WINAPI LoadModule( LPCSTR name, LPVOID paramBlock )
     return ret;
 }
 
+#endif
 
 /******************************************************************************
  *           TerminateProcess   (KERNEL32.@)
@@ -2722,6 +2735,7 @@ BOOL WINAPI TerminateProcess( HANDLE handle, DWORD exit_code )
     return !status;
 }
 
+#if 0
 /***********************************************************************
  *           ExitProcess   (KERNEL32.@)
  *
@@ -2749,6 +2763,8 @@ void WINAPI ExitProcess( DWORD status )
 {
     RtlExitUserProcess( status );
 }
+
+#endif
 
 #endif
 
@@ -2795,6 +2811,7 @@ UINT WINAPI SetErrorMode( UINT mode )
                              &mode, sizeof(mode) );
     return old;
 }
+
 
 /***********************************************************************
  *           GetErrorMode   (KERNEL32.@)
@@ -2920,7 +2937,6 @@ LPVOID WINAPI TlsGetValue( DWORD index )
     return ret;
 }
 
-
 /**********************************************************************
  * TlsSetValue          [KERNEL32.@]
  *
@@ -2960,7 +2976,7 @@ BOOL WINAPI TlsSetValue( DWORD index, LPVOID value )
     return TRUE;
 }
 
-
+#if 0
 /***********************************************************************
  *           GetProcessFlags    (KERNEL32.@)
  */
@@ -3024,6 +3040,7 @@ HANDLE WINAPI OpenProcess( DWORD access, BOOL inherit, DWORD id )
     return handle;
 }
 
+#endif
 
 /*********************************************************************
  *           GetProcessId       (KERNEL32.@)
@@ -3054,7 +3071,7 @@ DWORD WINAPI GetProcessId( HANDLE hProcess )
     return 0;
 }
 
-
+#if 0
 /*********************************************************************
  *           CloseHandle    (KERNEL32.@)
  *

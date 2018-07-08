@@ -282,7 +282,6 @@ DWORD FILE_name_WtoA( LPCWSTR src, INT srclen, LPSTR dest, INT destlen )
     return ret;
 }
 
-#if 0
 
 /**************************************************************************
  *              SetFileApisToOEM   (KERNEL32.@)
@@ -315,6 +314,8 @@ BOOL WINAPI AreFileApisANSI(void)
 {
     return !oem_file_apis;
 }
+
+#if 0
 
 
 /**************************************************************************
@@ -1581,11 +1582,11 @@ HANDLE WINAPI CreateFileW( LPCWSTR filename, DWORD access, DWORD sharing,
 
     if (sa && sa->bInheritHandle) attr.Attributes |= OBJ_INHERIT;
 
-/*
+
     status = NtCreateFile( &ret, access | SYNCHRONIZE, &attr, &io, NULL, attributes,
                            sharing, nt_disposition[creation - CREATE_NEW],
                            options, NULL, 0 );
-*/
+
     if (status)
     {
 /*

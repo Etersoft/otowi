@@ -263,7 +263,7 @@ PVOID WINAPI RtlAllocateHeap( HANDLE heap, ULONG flags, SIZE_T size )
 
     /* Validate the parameters */
 
-    if (!heap) return NULL;
+    //if (!heap) return NULL;
     flags &= HEAP_GENERATE_EXCEPTIONS | HEAP_NO_SERIALIZE | HEAP_ZERO_MEMORY;
     //flags |= heapPtr->flags;
     rounded_size = ROUND_SIZE(size) + HEAP_TAIL_EXTRA_SIZE( flags );

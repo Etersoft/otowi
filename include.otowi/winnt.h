@@ -143,7 +143,7 @@ extern "C" {
 #endif
 
 /* a couple of useful Wine extensions */
-
+#if 0
 #ifdef _MSC_VER
 # define DECLSPEC_EXPORT __declspec(dllexport)
 #elif defined(__MINGW32__)
@@ -161,6 +161,11 @@ extern "C" {
 #else
 # define DECLSPEC_HIDDEN
 #endif
+#endif
+// TODO: it make all symbol exported. use export table?
+# define DECLSPEC_EXPORT
+# define DECLSPEC_HIDDEN
+//
 
 #if defined(__GNUC__) && ((__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 3)))
 #define __WINE_ALLOC_SIZE(x) __attribute__((__alloc_size__(x)))

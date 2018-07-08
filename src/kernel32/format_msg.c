@@ -79,6 +79,8 @@ static LPWSTR load_message( HMODULE module, UINT id, WORD lang )
 
     TRACE("module = %p, id = %08x\n", module, id );
 
+// we have no .mc support
+#if 0
     if (!module) module = GetModuleHandleW( NULL );
     if ((status = RtlFindMessage( module, RT_MESSAGETABLE, lang, id, &mre )) != STATUS_SUCCESS)
     {
@@ -98,6 +100,13 @@ static LPWSTR load_message( HMODULE module, UINT id, WORD lang )
         if (!(buffer = HeapAlloc( GetProcessHeap(), 0, len * sizeof(WCHAR) ))) return NULL;
         MultiByteToWideChar( CP_ACP, 0, (const char*)mre->Text, -1, buffer, len );
     }
+#else
+    char stub[100];
+    sprintf(stub, "TODO FormatMessage id %d", id);
+    int len = strlen(stub);
+    if (!(buffer = HeapAlloc( GetProcessHeap(), 0, len * sizeof(WCHAR) ))) return NULL;
+    MultiByteToWideChar( CP_ACP, 0, stub, -1, buffer, len );
+#endif
     TRACE("returning %s\n", wine_dbgstr_w(buffer));
     return buffer;
 }

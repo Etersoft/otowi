@@ -732,9 +732,9 @@ static ULONG get_full_path_helper(LPCWSTR name, LPWSTR buffer, ULONG size)
         break;
 
     case ABSOLUTE_PATH:         /* \xxx    */
+#if 0
         if (name[0] == '/')  /* may be a Unix path */
         {
-#if 0
             const WCHAR *ptr = name;
             int drive = find_drive_rootW( &ptr );
             if (drive != -1)
@@ -748,7 +748,6 @@ static ULONG get_full_path_helper(LPCWSTR name, LPWSTR buffer, ULONG size)
                 dep = ptr - name;
                 break;
             }
-#endif
         }
         if (cd->Buffer[1] == ':')
         {
@@ -759,6 +758,7 @@ static ULONG get_full_path_helper(LPCWSTR name, LPWSTR buffer, ULONG size)
             mark = 3;
         }
         else
+#endif
         {
             ptr = skip_unc_prefix( cd->Buffer );
             reqsize = (ptr - cd->Buffer) * sizeof(WCHAR);

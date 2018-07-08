@@ -1,0 +1,8 @@
+{
+    "files.associations": {
+        "istream": "c",
+        "ostream": "c",
+        "ratio": "c",
+        "type_traits": "c"
+    }
+}
